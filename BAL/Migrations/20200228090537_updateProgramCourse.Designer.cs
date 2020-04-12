@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200228090537_updateProgramCourse")]
+    partial class updateProgramCourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,7 +28,7 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("AwAndPnId");
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<DateTime>("DateTime");
 
@@ -34,9 +36,9 @@ namespace DAL.Migrations
 
                     b.Property<bool>("IsRemove");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -52,15 +54,15 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<int>("Level");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -72,13 +74,13 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -92,13 +94,13 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("CategoryId");
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<int>("SkillId");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -109,22 +111,35 @@ namespace DAL.Migrations
                     b.ToTable("CategorySkill");
                 });
 
+            modelBuilder.Entity("BO.Models.CityEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("City");
+                });
+
             modelBuilder.Entity("BO.Models.CourseEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<bool>("IsAvailable");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<double>("Time");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -138,9 +153,9 @@ namespace DAL.Migrations
 
                     b.Property<string>("Address");
 
-                    b.Property<string>("City");
+                    b.Property<int>("CityId");
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<string>("Education");
 
@@ -160,15 +175,17 @@ namespace DAL.Migrations
 
                     b.Property<string>("NativeLand");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<int>("RoleId");
 
                     b.Property<DateTime>("StartedDate");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.HasIndex("RoleId");
 
@@ -180,7 +197,7 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<Guid>("EmployeeId");
 
@@ -192,11 +209,11 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("ProgramId");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<DateTime>("StartTime");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -212,7 +229,7 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<DateTime>("DateTime");
 
@@ -222,11 +239,11 @@ namespace DAL.Migrations
 
                     b.Property<bool>("IsCurrent");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<int>("StartRoleId");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -240,15 +257,15 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<Guid>("EmployeeId");
 
                     b.Property<int>("Level");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.Property<int>("skillId");
 
@@ -268,13 +285,13 @@ namespace DAL.Migrations
 
                     b.Property<Guid>("CourseId");
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<Guid>("ProgramId");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -290,13 +307,13 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -336,17 +353,17 @@ namespace DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<Guid>("EmployeeId");
 
                     b.Property<bool>("IsPrimary");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<Guid>("StoreId");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -364,19 +381,19 @@ namespace DAL.Migrations
 
                     b.Property<string>("Address");
 
-                    b.Property<string>("CreatedBy");
+                    b.Property<Guid?>("CreatedBy");
 
                     b.Property<DateTime>("EndedDate");
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("RemovedBy");
+                    b.Property<Guid?>("RemovedBy");
 
                     b.Property<int>("Size");
 
                     b.Property<DateTime>("StartedDate");
 
-                    b.Property<string>("UpdateBy");
+                    b.Property<Guid?>("UpdateBy");
 
                     b.HasKey("Id");
 
@@ -444,6 +461,11 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("BO.Models.EmployeeEntity", b =>
                 {
+                    b.HasOne("BO.Models.CityEntity", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("BO.Models.RoleEntity", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")

@@ -8,7 +8,6 @@ namespace BO.Request
     {
         public Guid Id { get; set; }
         public Guid EmployeeId { get; set; }
-        public Guid CreatedById { get; set; }
         public int StartRoleId { get; set; }
         public int EndRoleId { get; set; }
         public DateTime DateTime { get; set; }

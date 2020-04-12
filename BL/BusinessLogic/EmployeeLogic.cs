@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using BL.Commons;
 using BL.Interfaces;
 using BO.Dtos;
 using BO.Models;
@@ -16,113 +17,134 @@ namespace BL.BusinessLogic
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        public EmployeeLogic( IUnitOfWork uow, IMapper mapper)
+        private readonly UserHelper _userHelper;
+        public EmployeeLogic( IUnitOfWork uow, IMapper mapper, UserHelper userHelper)
         {
             _uow = uow;
             _mapper = mapper;
+            _userHelper = userHelper;
         }
 
-        public EmployeeDto GetEmployee (Guid  employeeid )
+        public BaseResponse<EmployeeDto> GetEmployee (Guid  employeeid )
         {
-            
+            var respond = new BaseResponse<EmployeeDto>
+            {
+                Data = null,
+                Success = true,
+                ErrorsMessages = ""
+            };
             var employee = _uow.GetRepository<EmployeeEntity>().GetAll()
                 .Include(c => c.Role)
+                
                 .FirstOrDefault(c => c.Id == employeeid);
 
             var result = _mapper.Map<EmployeeDto>(employee);
-            return result;
+            if (result != null)
+            {
+                respond.Data = result;
+
+            }
+            else
+            {
+                respond.Success = false;
+            }
+            return respond;
         }
 
-        public EmployeeDto DeleteEmployee(Guid employeeid)
+        public BaseResponse<bool> DeleteEmployee(Guid employeeid)
         {
+            var respond = new BaseResponse<bool>
+            {
+                Data = false,
+                Success = true,
+                ErrorsMessages = ""
+            };
 
             var employee = _uow.GetRepository<EmployeeEntity>().GetAll()
                 .FirstOrDefault(c => c.Id == employeeid);
+            if (employee == null)
+            {
+                respond.Success = false;
+                respond.ErrorsMessages = "Not Found";
+                return respond;
+            }
             _uow.GetRepository<EmployeeEntity>().Delete(employee);
             _uow.SaveChange();
             var result = _mapper.Map<EmployeeDto>(employee);
-            return result;
+            if (result != null)
+            {
+                respond.Data = true;
+
+            }
+            else
+            {
+                respond.Success = false;
+            }
+            return respond;
         }
 
-        public List<EmployeeDto> GetEmployeesWithCondition(SearchEmployeeRequest request)
+        public BaseResponse<List<EmployeeDto>> GetEmployeesWithCondition(String keyword, int roleId, int currentpage, int pagerange)
         {
+            var respond = new BaseResponse<List<EmployeeDto>>
+            {
+                Data = null,
+                Success = true,
+                ErrorsMessages = ""
+            };
             List<EmployeeDto> listEmployee = new List<EmployeeDto>();
-
+            var result = new List<EmployeeEntity>();
             var employee = _uow.GetRepository<EmployeeEntity>().GetAll()
                 .Include(c => c.Role)
-                .Include(c => c.City);
-            //001
-            if (request.RoleId == 0 && request.CityId==0 && request.Name.Length !=0)
+                ;
+
+            if (keyword.Length == 0 && roleId!=0)
             {
-                employee.Where(c =>  c.Name.Contains(request.Name))
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
+                result = employee.Where(c => c.RoleId == roleId).OrderBy(c => c.Name)
+                    .Skip((currentpage - 1) * pagerange)
+                    .Take(pagerange).ToList();
             }
-            //011
-            if (request.RoleId == 0 && request.CityId != 0 && request.Name.Length != 0)
+            if (keyword.Length != 0 && roleId != 0)
             {
-                employee.Where(c => c.CityId== request.CityId && c.Name.Contains(request.Name))
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
+                result= employee.Where(c => c.RoleId == roleId && c.Name.Contains(keyword)).OrderBy(c => c.Name)
+                    .Skip((currentpage - 1) * pagerange)
+                    .Take(pagerange).ToList();
             }
-            //101
-            if (request.RoleId != 0 && request.CityId == 0 && request.Name.Length != 0)
+            if (keyword.Length != 0 && roleId == 0)
             {
-                employee.Where(c => c.CityId == request.CityId && c.Name.Contains(request.Name))
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
+                result = employee.Where(c => c.Name.Contains(keyword)).OrderBy(c => c.Name)
+                    .Skip((currentpage - 1) * pagerange)
+                    .Take(pagerange).ToList();
             }
-            //100
-            if (request.RoleId != 0 && request.CityId == 0 && request.Name.Length == 0)
+            if (keyword.Length == 0 && roleId == 0)
             {
-                employee.Where(c => c.RoleId == request.RoleId)
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
-            }
-            //110
-            if (request.RoleId != 0 && request.CityId != 0 && request.Name.Length == 0)
-            {
-                employee.Where(c => c.CityId == request.CityId && c.RoleId == request.RoleId)
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
-            }
-            //010
-            if (request.RoleId == 0 && request.CityId != 0 && request.Name.Length == 0)
-            {
-                employee.Where(c => c.CityId == request.CityId )
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
-            }
-            //111
-            if (request.RoleId != 0 && request.CityId != 0 && request.Name.Length != 0)
-            {
-                employee.Where(c => c.CityId== request.CityId && c.RoleId == request.RoleId && c.Name.Contains(request.Name))
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .ToList();
-            }
-            //000
-            if (request.RoleId == 0 && request.CityId == 0 && request.Name.Length == 0)
-            {
-                employee
-                    .Skip((request.CurrentPage - 1) * request.PageRange)
-                    .Take(request.PageRange)
-                    .OrderBy(c => c.RoleId)
-                    .ToList();
+                result = employee.OrderBy(c => c.Name)
+                    .Skip((currentpage - 1) * pagerange)
+                    .Take(pagerange).ToList();
             }
 
-            listEmployee = _mapper.Map<List<EmployeeDto>>(employee);
-            return listEmployee;
+            listEmployee = _mapper.Map<List<EmployeeDto>>(result);
+            if (listEmployee.Count != 0)
+            {
+                respond.Data = listEmployee;
+
+            }
+            else
+            {
+                respond.Success = false;
+                respond.ErrorsMessages = "Not Found !";
+            }
+            return respond;
+            
         }
 
-        public bool InsertEmployee(EmployeeDto employee)
+        public BaseResponse<bool> InsertEmployee(EmployeeDto employee)
         {
+            var respond = new BaseResponse<bool>
+            {
+                Data = true,
+                Success = true,
+                ErrorsMessages = ""
+            };
             try
             {
                 _uow.GetRepository<EmployeeEntity>().Insert(new EmployeeEntity()
@@ -133,7 +155,7 @@ namespace BL.BusinessLogic
                     Education = employee.Education,
                     Email = employee.Email,
                     Gender = employee.Gender,
-                    CityId = employee.CityId,
+                    City = employee.City,
                     IdentificationNumber = employee.IdentificationNumber,
                     GraduatedAt = employee.GraduatedAt,
                     HouseholdAddress = employee.HouseholdAddress,
@@ -144,27 +166,55 @@ namespace BL.BusinessLogic
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return false;
+                respond.Success = false;
+                respond.Data = false;
+                respond.ErrorsMessages = e.ToString();
             }
-            return true;
+            return respond;
         }
-        public bool UpdateEmployee(UpdateEmployeeRequest request)
+        public BaseResponse<bool> UpdateEmployee(UpdateEmployeeRequest request)
         {
+            var respond = new BaseResponse<bool>
+            {
+                Data = true,
+                Success = true,
+                ErrorsMessages = ""
+            };
             try
             {
                 var employee = _uow.GetRepository<EmployeeEntity>().GetAll()
                     .FirstOrDefault(c => c.Id == request.EmployeeId);
-                var temp = _mapper.Map<EmployeeEntity>(request.EmployeeInfo);
-                employee = temp;
-                _uow.SaveChange();
+                if (employee != null)
+                {
+                    employee.Name = request.EmployeeInfo.Name;
+                    employee.IdentificationNumber = request.EmployeeInfo.IdentificationNumber;
+                    employee.Address = request.EmployeeInfo.Address;
+                    employee.Gender = request.EmployeeInfo.Gender;
+                    employee.HouseholdAddress = request.EmployeeInfo.HouseholdAddress;
+                    employee.City = request.EmployeeInfo.City;
+                    employee.Email = request.EmployeeInfo.Email;
+                    employee.GraduatedAt = request.EmployeeInfo.GraduatedAt;
+                    employee.NativeLand = request.EmployeeInfo.NativeLand;
+                    employee.Education = request.EmployeeInfo.Education;
+                    employee.RoleId = request.EmployeeInfo.RoleId;
+
+                    _uow.SaveChange();
+                }
+                else
+                {
+                    respond.Success = false;
+                    respond.Data = false;
+                    respond.ErrorsMessages = "Not Found";
+                }
+                
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return false;
+                respond.Success = false;
+                respond.Data = false;
+                respond.ErrorsMessages = e.ToString();
             }
-            return true;
+            return respond;
         }
     }
 }

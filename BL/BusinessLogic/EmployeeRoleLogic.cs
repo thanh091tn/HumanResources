@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using AutoMapper;
+using BL.Commons;
 using BL.Interfaces;
 using BO.Dtos;
 using BO.Models;
@@ -16,35 +17,83 @@ namespace BL.BusinessLogic
     {
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        public EmployeeRoleLogic(IUnitOfWork uow, IMapper mapper)
+        private readonly UserHelper _userHelper;
+        public EmployeeRoleLogic(IUnitOfWork uow, IMapper mapper, UserHelper userHelper)
         {
             _uow = uow;
             _mapper = mapper;
+            _userHelper = userHelper;
         }
 
-        public List<EmployeeRoleDto> GetEmployeeRoles(Guid employeeId)
+        public BaseResponse<List<EmployeeRoleDto>> GetEmployeeRoles(Guid employeeId, int currentpage, int pagerange)
         {
+            var respond = new BaseResponse<List<EmployeeRoleDto>>
+            {
+                Data = null,
+                Success = true,
+                ErrorsMessages = ""
+            };
+            var result = new List<EmployeeRoleDto>();
             var entity = _uow.GetRepository<EmployeeRoleEntity>().GetAll()
                 .Include(c => c.Employee)
-                .Where(c => c.EmployeeId == employeeId);
+                .Include(c => c.Employee.Role)
+                .Where(c => c.EmployeeId == employeeId)
+                .Skip((currentpage - 1) * pagerange)
+                .Take(pagerange).ToList();
 
+            result = _mapper.Map<List<EmployeeRoleDto>>(entity);
+            foreach (var x in result)
+            {
+                x.StartRoleName = _uow.GetRepository<RoleEntity>().GetAll().FirstOrDefault(c => c.Id == x.StartRoleId).Name;
+                x.EndRoleName = _uow.GetRepository<RoleEntity>().GetAll().FirstOrDefault(c => c.Id == x.EndRoleId).Name;
+            }
 
-            return _mapper.Map<List<EmployeeRoleDto>>(entity);
+            if (result != null)
+            {
+                respond.Data = result;
+            }
+            else
+            {
+                respond.Success = false;
+                respond.ErrorsMessages = "Not Found";
+            }
+            return respond;
         }
 
-        public EmployeeRoleDto GetEmployeeRole(Guid employeeId)
+        public BaseResponse<EmployeeRoleDto> GetEmployeeRole(Guid employeeId)
         {
+            var respond = new BaseResponse<EmployeeRoleDto>
+            {
+                Data = null,
+                Success = true,
+                ErrorsMessages = ""
+            };
             var entity = _uow.GetRepository<EmployeeRoleEntity>().GetAll()
                 .FirstOrDefault(c => c.EmployeeId == employeeId);
-            
-            return _mapper.Map<EmployeeRoleDto>(entity);
+            var result = _mapper.Map<EmployeeRoleDto>(entity);
+            if (result != null)
+            {
+                respond.Data = result;
+            }
+            else
+            {
+                respond.Success = false;
+                respond.ErrorsMessages = "Not Found";
+            }
+            return respond;
         }
 
-        public bool InsertOrUpdateEmployeeRole(InsertOrUpdateEmployeeRoleRequest employeerole)
+        public BaseResponse<bool> InsertOrUpdateEmployeeRole(InsertOrUpdateEmployeeRoleRequest employeerole)
         {
+            var respond = new BaseResponse<bool>
+            {
+                Data = true,
+                Success = true,
+                ErrorsMessages = ""
+            };
             try
             {
-                if(employeerole.Id == null) { 
+                if(employeerole.Id == Guid.Empty) { 
                 var t = _uow.GetRepository<EmployeeRoleEntity>().GetAll().Where(c => c.EmployeeId == employeerole.EmployeeId);
                 foreach (var x in t)
                 {
@@ -53,8 +102,8 @@ namespace BL.BusinessLogic
                 _uow.GetRepository<EmployeeRoleEntity>().Insert(new EmployeeRoleEntity()
                 {
                     EmployeeId = employeerole.EmployeeId,
-                    DateTime = employeerole.DateTime,
-                    CreatedBy = employeerole.CreatedById,
+                    DateTime = DateTime.Now,
+                    CreatedBy = _userHelper.GetUserId(),
                     StartRoleId = employeerole.StartRoleId,
                     EndRoleId = employeerole.EndRoleId,
                     IsCurrent = true
@@ -65,7 +114,7 @@ namespace BL.BusinessLogic
                 {
                     var entity = _uow.GetRepository<EmployeeRoleEntity>().GetAll()
                         .FirstOrDefault(c => c.Id == employeerole.Id);
-                    entity.DateTime = employeerole.DateTime;
+                    entity.DateTime = DateTime.Now;
                     entity.StartRoleId = employeerole.StartRoleId;
                     entity.EndRoleId = employeerole.EndRoleId;
                     entity.EmployeeId = employeerole.EmployeeId;
@@ -74,10 +123,38 @@ namespace BL.BusinessLogic
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return false;
+                respond.Data = false;
+                respond.Success = false;
+                respond.ErrorsMessages = e.ToString();
             }
-            return true;
+            return respond;
+        }
+
+        public BaseResponse<bool> DeleteEmployeeRole(Guid id)
+        {
+            var respond = new BaseResponse<bool>
+            {
+                Data = true,
+                Success = true,
+                ErrorsMessages = ""
+            };
+
+            try
+            {
+                var entity = _uow.GetRepository<EmployeeRoleEntity>().GetAll()
+                    .FirstOrDefault(c => c.Id == id);
+                _uow.GetRepository<EmployeeRoleEntity>().Delete(entity);
+                _uow.SaveChange();
+                
+            }
+            catch (Exception e)
+            {
+                respond.Success = false;
+                respond.Data = false;
+                respond.ErrorsMessages = "Invalid ID";
+            }
+
+            return respond;
         }
     }
 }

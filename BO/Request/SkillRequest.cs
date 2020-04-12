@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BO.Dtos;
+using BO.Models;
 
 namespace BO.Request
 {
@@ -9,7 +11,6 @@ namespace BO.Request
         public Guid EmployeeId { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
-        public int SkillId { get; set; }
-        public int Level { get; set; }
+        public List<SkillDto> Skill { get; set; }
     }
 }

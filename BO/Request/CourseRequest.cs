@@ -18,9 +18,5 @@ namespace BO.Request
         /// IsAvailable
         /// </summary>
         public bool IsAvailable { get; set; }
-
-        public Guid Createdby { get; set; }
-        public Guid UpdatedBy { get; set; }
-        public Guid RemovedBy { get; set; }
     }
 }

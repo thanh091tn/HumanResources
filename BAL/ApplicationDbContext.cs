@@ -22,7 +22,6 @@ namespace DAL
         public DbSet<EmployeeRoleEntity> EmployeeRole { get; set; }
         public DbSet<AwAndPnEmployeeEntity> AndPnEmployee { get; set; }
         public DbSet<AwAndPnEntity> AwAndPn { get; set; }
-        public DbSet<CityEntity> City { get; set; }
 
 
 

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace BO.Request
 {
-    public class SearchEmployeeRequest : BaseRequest
+    public class InsertProgramRequest
     {
         public string Name { get; set; }
-        public int RoleId { get; set; }
+        public List<Guid> Courses { get; set; }
     }
 }

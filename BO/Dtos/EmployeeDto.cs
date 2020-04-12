@@ -6,6 +6,7 @@ namespace BO.Dtos
 {
     public class EmployeeDto
     {
+        public Guid Id { get; set; }
         /// <summary>
         /// Name
         /// </summary>
@@ -34,7 +35,7 @@ namespace BO.Dtos
         /// <summary>
         /// CityId
         /// </summary>
-        public int CityId { get; set; }
+        public String City { get; set; }
 
         /// <summary>
         /// Email

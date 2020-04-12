@@ -8,6 +8,8 @@ namespace BO.Request
     public class UpdateCourseRequest
     {
         public Guid CourseId { get; set; }
-        public CourseEntity CourseInfo { get; set; }
+        public string Name { get; set; }
+        public double Time { get; set; }
+        public bool IsAvailable { get; set; }
     }
 }

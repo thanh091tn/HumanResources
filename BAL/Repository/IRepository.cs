@@ -11,6 +11,8 @@ namespace DAL.Repository
         void Insert(T entity);
         void Delete(T entity);
         void Update(T entity);
-
+        void BulkUpdate(IEnumerable<T> entities);
+        void BulkDelete(IEnumerable<T> entities);
+        void BulkInsert(IEnumerable<T> entities);
     }
 }

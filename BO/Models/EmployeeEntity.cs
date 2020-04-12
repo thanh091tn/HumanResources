@@ -37,7 +37,7 @@ namespace BO.Models
         /// <summary>
         /// CityId
         /// </summary>
-        public int CityId { get; set; }
+        public string City { get; set; }
 
         /// <summary>
         /// Email
@@ -80,11 +80,6 @@ namespace BO.Models
         [ForeignKey("RoleId")]
         public RoleEntity Role { get; set; }
 
-        /// <summary>
-        /// Role
-        /// </summary>
-        [ForeignKey("CityId")]
-        public CityEntity City { get; set; }
 
         /// <summary>
         /// EmployeeCourse

@@ -8,5 +8,6 @@ namespace BL.Interfaces
     public interface IUserLogic
     {
         UserDetailDto Login(string userid, string password);
+        UserDetailDto LoginFirebase(string token);
     }
 }

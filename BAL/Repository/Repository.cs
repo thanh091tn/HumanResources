@@ -36,7 +36,9 @@ namespace DAL.Repository
         {
             return _dbSet;
         }
+        public virtual void BulkUpdate(IEnumerable<T> entities) => _dbSet.UpdateRange(entities);
 
-
+        public virtual void BulkDelete(IEnumerable<T> entities) => _dbSet.RemoveRange(entities);
+        public virtual void BulkInsert(IEnumerable<T> entities) => _dbSet.AddRange(entities);
     }
 }

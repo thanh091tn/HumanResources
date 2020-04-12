@@ -151,6 +151,11 @@ namespace API
             services.AddScoped<ICourseLogic, CourseLogic>();
             services.AddScoped<IProgramLogic, ProgramLogic>();
             services.AddScoped<IEmployeeRoleLogic, EmployeeRoleLogic>();
+            services.AddScoped<ISkillLogic, SkillLogic>();
+            services.AddScoped<ICategoryLogic, CategoryLogic>();
+            services.AddScoped<IAwAndPnLogic, AwAndPnLogic>();
+            services.AddScoped<IProgramCourseLogic, ProgramCourseLogic>();
+
 
 
             services.AddScoped<UserHelper, UserHelper>();

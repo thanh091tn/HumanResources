@@ -4,10 +4,10 @@ using System.Text;
 
 namespace BO.Dtos
 {
-    public class CategorySkillDto
+    public class ProgramCourseDto
     {
         public Guid Id { get; set; }
-        public int SkillId { get; set; }
-        public string SkillName { get; set; }
+        public string Name { get; set; }
+        public List<CourseDto> ListCourse { get; set; }
     }
 }

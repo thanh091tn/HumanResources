@@ -9,6 +9,7 @@ namespace BO.Dtos
         public Guid Id { get; set; }
         public string Name { get; set; }
         public double Time { get; set; }
+        public bool IsAvailable { get; set; }
         
     }
 }

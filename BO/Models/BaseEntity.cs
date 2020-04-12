@@ -15,16 +15,16 @@ namespace BO.Models
         /// <summary>
         /// CreatedBy
         /// </summary>
-        public Guid? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         /// <summary>
         /// UpdateBy
         /// </summary>
-        public Guid? UpdateBy { get; set; }
+        public string UpdateBy { get; set; }
 
         /// <summary>
         /// RemovedBy
         /// </summary>
-        public Guid? RemovedBy { get; set; }
+        public string RemovedBy { get; set; }
     }
 }

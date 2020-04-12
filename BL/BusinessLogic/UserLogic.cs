@@ -65,5 +65,33 @@ namespace BL.BusinessLogic
                 UserId = User.UserId
             };
         }
+
+
+        public UserDetailDto LoginFirebase(string token)
+        {
+            var stream = token;
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(stream);
+            var tokenS = handler.ReadToken(stream) as JwtSecurityToken;
+
+            var userid = tokenS.Claims.First(claim => claim.Type == "sub").Value;
+            var name = tokenS.Claims.First(claim => claim.Type == "name").Value;
+            var email = tokenS.Claims.First(claim => claim.Type == "email").Value;
+            var temp = _uow.GetRepository<UserEntity>().GetAll().FirstOrDefault(c => c.UserId.Equals(userid));
+            if (temp == null)
+            {
+                _uow.GetRepository<UserEntity>().Insert(new UserEntity
+                {
+                    UserId = userid,
+                    Password = "password",
+                    RoleId = 1,
+                    Email = email,
+                    UserName = name
+                });
+                _uow.SaveChange();
+            }
+
+            return Login(userid, "password");
+        }
     }
 }
